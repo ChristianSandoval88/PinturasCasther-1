@@ -1,22 +1,3 @@
-//    Openbravo POS is a point of sales application designed for touch screens.
-//    Copyright (C) 2007-2009 Openbravo, S.L.
-//    http://www.openbravo.com/product/pos
-//
-//    This file is part of Openbravo POS.
-//
-//    Openbravo POS is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    (at your option) any later version.
-//
-//    Openbravo POS is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
-//
-//    You should have received a copy of the GNU General Public License
-//    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
-
 package com.openbravo.pos.forms;
 
 import java.util.Locale;
@@ -65,9 +46,10 @@ public class StartPOS {
                 if (!registerApp()) {
                     System.exit(1);
                 }
-                
                 AppConfig config = new AppConfig(args);
                 config.load();
+                /*
+                
                 
                 int seleccion = JOptionPane.showOptionDialog( null,"Seleccione una opcion",
                          "Selector de opciones",JOptionPane.YES_NO_CANCEL_OPTION,
@@ -122,7 +104,7 @@ public class StartPOS {
                         config.setProperty("db.URL", "jdbc:mysql://25.43.6.50/pv");
                     }
                 }
-
+*/
                 //System.out.println(config.getProperty("db.URL"));
                 // set Locale.
                 String slang = config.getProperty("user.language");

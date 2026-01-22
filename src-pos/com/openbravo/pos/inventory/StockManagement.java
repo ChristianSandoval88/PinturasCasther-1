@@ -1,51 +1,31 @@
-//    Openbravo POS is a point of sales application designed for touch screens.
-//    Copyright (C) 2007-2009 Openbravo, S.L.
-//    http://www.openbravo.com/product/pos
-//
-//    This file is part of Openbravo POS.
-//
-//    Openbravo POS is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    (at your option) any later version.
-//
-//    Openbravo POS is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
-//
-//    You should have received a copy of the GNU General Public License
-//    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.openbravo.pos.inventory;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;
 import com.openbravo.basic.BasicException;
 import com.openbravo.beans.*;
 import com.openbravo.data.gui.*;
 import com.openbravo.data.loader.*;
 import com.openbravo.format.Formats;
-import com.openbravo.pos.scripting.ScriptEngine;
-import com.openbravo.pos.scripting.ScriptException;
-import com.openbravo.pos.scripting.ScriptFactory;
 import com.openbravo.pos.catalog.CatalogSelector;
-import com.openbravo.pos.forms.*;
 import com.openbravo.pos.catalog.JCatalog;
+import com.openbravo.pos.forms.*;
+import com.openbravo.pos.panels.JProductFinder;
 import com.openbravo.pos.printer.TicketParser;
 import com.openbravo.pos.printer.TicketPrinterException;
 import com.openbravo.pos.sales.JProductAttEdit;
 import com.openbravo.pos.scanpal2.DeviceScanner;
 import com.openbravo.pos.scanpal2.DeviceScannerException;
 import com.openbravo.pos.scanpal2.ProductDownloaded;
+import com.openbravo.pos.scripting.ScriptEngine;
+import com.openbravo.pos.scripting.ScriptException;
+import com.openbravo.pos.scripting.ScriptFactory;
 import com.openbravo.pos.ticket.ProductInfoExt;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.util.*;
+import javax.swing.*;
 
-/**
- *
- * @author adrianromero
- */
 public class StockManagement extends JPanel implements JPanelView {
     
     private AppView m_App;
@@ -80,8 +60,6 @@ public class StockManagement extends JPanel implements JPanelView {
         
         btnDownloadProducts.setEnabled(m_App.getDeviceScanner() != null);
 
-        
-        // El modelo de locales
         m_sentlocations = m_dlSales.getLocationsList();
         m_LocationsModel =  new ComboBoxValModel();        
         m_LocationsModelDes = new ComboBoxValModel();
@@ -94,7 +72,7 @@ public class StockManagement extends JPanel implements JPanelView {
         m_ReasonModel.add(MovementReason.OUT_REFUND);
         m_ReasonModel.add(MovementReason.OUT_BREAK);
         m_ReasonModel.add(MovementReason.OUT_MOVEMENT);        
-        m_ReasonModel.add(MovementReason.OUT_CROSSING);        
+        //m_ReasonModel.add(MovementReason.OUT_CROSSING);        
         
         m_jreason.setModel(m_ReasonModel);
         
@@ -122,8 +100,8 @@ public class StockManagement extends JPanel implements JPanelView {
         java.util.List l = m_sentlocations.list();
         m_LocationsModel = new ComboBoxValModel(l);
         m_jLocation.setModel(m_LocationsModel); // para que lo refresque
-        m_LocationsModelDes = new ComboBoxValModel(l);
-        m_jLocationDes.setModel(m_LocationsModelDes); // para que lo refresque
+        //m_LocationsModelDes = new ComboBoxValModel(l);
+        //m_jLocationDes.setModel(m_LocationsModelDes); // para que lo refresque
         
         stateToInsert();
         
@@ -140,7 +118,7 @@ public class StockManagement extends JPanel implements JPanelView {
         m_jdate.setText(Formats.TIMESTAMP.formatValue(DateUtils.getTodayMinutes()));
         m_ReasonModel.setSelectedItem(MovementReason.IN_PURCHASE); 
         m_LocationsModel.setSelectedKey(m_App.getInventoryLocation());     
-        m_LocationsModelDes.setSelectedKey(m_App.getInventoryLocation());         
+        //m_LocationsModelDes.setSelectedKey(m_App.getInventoryLocation());         
         m_invlines.clear();
         m_jcodebar.setText(null);
     }
@@ -194,8 +172,14 @@ public class StockManagement extends JPanel implements JPanelView {
             if (oProduct == null) {                  
                 Toolkit.getDefaultToolkit().beep();                   
             } else {
+                 String units = JOptionPane.showInputDialog(null,"Cantidad:", oProduct.getName(), JOptionPane.QUESTION_MESSAGE);
+                try {
+                    double d = Double.parseDouble(units);
+                    incProduct(oProduct, d);
+                } catch (Exception e) {
+                }
                 // Se anade directamente una unidad con el precio y todo
-                incProduct(oProduct, dQuantity);
+                //incProduct(oProduct, dQuantity);
             }
         } catch (BasicException eData) {       
             MessageInf msg = new MessageInf(eData);
@@ -230,7 +214,11 @@ public class StockManagement extends JPanel implements JPanelView {
         if (cTrans == '\u007f') { 
             m_jcodebar.setText(null);
             NUMBER_STATE = DEFAULT;
-        } else if (cTrans == '*') {
+        } 
+        else if (cTrans == '/') {
+           Buscar();
+        }
+        else if (cTrans == '*') {
             MULTIPLY = ACTIVE;
         } else if (cTrans == '+') {
             if (MULTIPLY != DEFAULT && NUMBER_STATE != DEFAULT) {
@@ -262,12 +250,16 @@ public class StockManagement extends JPanel implements JPanelView {
                 m_jcodebar.setText(m_jcodebar.getText() + cTrans);
             }
             NUMBER_STATE = DECIMAL;
-        } else if (cTrans == ' ' || cTrans == '=') {
+        } else if (cTrans == '=') {
             if (m_invlines.getCount() == 0) {
                 // No podemos grabar, no hay ningun registro.
                 Toolkit.getDefaultToolkit().beep();
             } else {
+                int respuesta = JOptionPane.showConfirmDialog(null, "Esta seguro que desea realizar la captura de inventario?");
+            if(respuesta == JOptionPane.OK_OPTION)
+            {
                 saveData();
+            }
             }
         } else if (Character.isDigit(cTrans)) {
             if (m_jcodebar.getText() == null) {
@@ -289,26 +281,12 @@ public class StockManagement extends JPanel implements JPanelView {
             Date d = (Date) Formats.TIMESTAMP.parseValue(m_jdate.getText());
             MovementReason reason = (MovementReason) m_ReasonModel.getSelectedItem();
 
-            if (reason == MovementReason.OUT_CROSSING) {
-                // Es una doble entrada
-                saveData(new InventoryRecord(
-                        d, MovementReason.OUT_MOVEMENT,
-                        (LocationInfo) m_LocationsModel.getSelectedItem(),
-                        m_invlines.getLines()
-                    ));
-                saveData(new InventoryRecord(
-                        d, MovementReason.IN_MOVEMENT,
-                        (LocationInfo) m_LocationsModelDes.getSelectedItem(),
-                        m_invlines.getLines()
-                    ));                
-            } else {  
                 // Es un movimiento
                 saveData(new InventoryRecord(
                         d, reason,
                         (LocationInfo) m_LocationsModel.getSelectedItem(),
                         m_invlines.getLines()
                     ));
-            }
             
             stateToInsert();  
         } catch (BasicException eData) {
@@ -319,7 +297,6 @@ public class StockManagement extends JPanel implements JPanelView {
         
     private void saveData(InventoryRecord rec) throws BasicException {
         
-        // A grabar.
         SentenceExec sent = m_dlSales.getStockDiaryInsert();
         
         for (int i = 0; i < m_invlines.getCount(); i++) {
@@ -371,7 +348,13 @@ public class StockManagement extends JPanel implements JPanelView {
                 incProduct( (ProductInfoExt) e.getSource(), dQty);
                 m_jcodebar.setText(null);
             } else {
-                incProduct( (ProductInfoExt) e.getSource(),1.0);
+                ProductInfoExt prod = (ProductInfoExt) e.getSource();
+                 String units = JOptionPane.showInputDialog(null,"Cantidad:", prod.getName(), JOptionPane.QUESTION_MESSAGE);
+                try {
+                    double d = Double.parseDouble(units);
+                    incProduct(prod, d);
+                } catch (Exception ex) {
+                }
             }
         }  
     }  
@@ -385,6 +368,7 @@ public class StockManagement extends JPanel implements JPanelView {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        m_jLocationDes = new javax.swing.JComboBox();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jNumberKeys = new com.openbravo.beans.JNumberKeys();
@@ -400,14 +384,14 @@ public class StockManagement extends JPanel implements JPanelView {
         m_jbtndate = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         m_jreason = new javax.swing.JComboBox();
-        jLabel8 = new javax.swing.JLabel();
         m_jLocation = new javax.swing.JComboBox();
         m_jDelete = new javax.swing.JButton();
         m_jUp = new javax.swing.JButton();
         m_jDown = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
-        m_jLocationDes = new javax.swing.JComboBox();
-        jEditAttributes = new javax.swing.JButton();
+        m_jDelete2 = new javax.swing.JButton();
+        m_jDelete3 = new javax.swing.JButton();
+        m_jDelete1 = new javax.swing.JButton();
         catcontainer = new javax.swing.JPanel();
 
         setLayout(new java.awt.BorderLayout());
@@ -495,9 +479,9 @@ public class StockManagement extends JPanel implements JPanelView {
 
         jLabel1.setText(AppLocal.getIntString("label.stockdate")); // NOI18N
         jPanel3.add(jLabel1);
-        jLabel1.setBounds(10, 30, 150, 15);
+        jLabel1.setBounds(10, 30, 150, 16);
         jPanel3.add(m_jdate);
-        m_jdate.setBounds(160, 30, 200, 19);
+        m_jdate.setBounds(160, 30, 200, 22);
 
         m_jbtndate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/date.png"))); // NOI18N
         m_jbtndate.addActionListener(new java.awt.event.ActionListener() {
@@ -506,11 +490,11 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(m_jbtndate);
-        m_jbtndate.setBounds(370, 30, 40, 26);
+        m_jbtndate.setBounds(370, 30, 40, 25);
 
-        jLabel2.setText(AppLocal.getIntString("label.stockreason")); // NOI18N
+        jLabel2.setText("Razón/Sucursal");
         jPanel3.add(jLabel2);
-        jLabel2.setBounds(10, 60, 150, 15);
+        jLabel2.setBounds(10, 60, 150, 16);
 
         m_jreason.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -519,12 +503,8 @@ public class StockManagement extends JPanel implements JPanelView {
         });
         jPanel3.add(m_jreason);
         m_jreason.setBounds(160, 60, 200, 20);
-
-        jLabel8.setText(AppLocal.getIntString("label.warehouse")); // NOI18N
-        jPanel3.add(jLabel8);
-        jLabel8.setBounds(10, 90, 150, 15);
         jPanel3.add(m_jLocation);
-        m_jLocation.setBounds(160, 90, 200, 20);
+        m_jLocation.setBounds(380, 60, 200, 20);
 
         m_jDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/locationbar_erase.png"))); // NOI18N
         m_jDelete.setFocusPainted(false);
@@ -537,7 +517,7 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(m_jDelete);
-        m_jDelete.setBounds(430, 230, 56, 44);
+        m_jDelete.setBounds(430, 190, 54, 42);
 
         m_jUp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow22.png"))); // NOI18N
         m_jUp.setFocusPainted(false);
@@ -550,7 +530,7 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(m_jUp);
-        m_jUp.setBounds(430, 130, 56, 44);
+        m_jUp.setBounds(430, 90, 54, 42);
 
         m_jDown.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow22.png"))); // NOI18N
         m_jDown.setFocusPainted(false);
@@ -563,26 +543,50 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(m_jDown);
-        m_jDown.setBounds(430, 180, 56, 44);
+        m_jDown.setBounds(430, 140, 54, 42);
 
         jPanel5.setLayout(new java.awt.BorderLayout());
         jPanel3.add(jPanel5);
-        jPanel5.setBounds(10, 130, 410, 190);
-        jPanel3.add(m_jLocationDes);
-        m_jLocationDes.setBounds(370, 90, 200, 20);
+        jPanel5.setBounds(10, 90, 410, 340);
 
-        jEditAttributes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/colorize.png"))); // NOI18N
-        jEditAttributes.setFocusPainted(false);
-        jEditAttributes.setFocusable(false);
-        jEditAttributes.setMargin(new java.awt.Insets(8, 14, 8, 14));
-        jEditAttributes.setRequestFocusEnabled(false);
-        jEditAttributes.addActionListener(new java.awt.event.ActionListener() {
+        m_jDelete2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/search22.png"))); // NOI18N
+        m_jDelete2.setFocusPainted(false);
+        m_jDelete2.setFocusable(false);
+        m_jDelete2.setMargin(new java.awt.Insets(8, 14, 8, 14));
+        m_jDelete2.setRequestFocusEnabled(false);
+        m_jDelete2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jEditAttributesActionPerformed(evt);
+                m_jDelete2ActionPerformed(evt);
             }
         });
-        jPanel3.add(jEditAttributes);
-        jEditAttributes.setBounds(430, 280, 58, 46);
+        jPanel3.add(m_jDelete2);
+        m_jDelete2.setBounds(430, 240, 54, 42);
+
+        m_jDelete3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/color_line.png"))); // NOI18N
+        m_jDelete3.setFocusPainted(false);
+        m_jDelete3.setFocusable(false);
+        m_jDelete3.setMargin(new java.awt.Insets(8, 14, 8, 14));
+        m_jDelete3.setRequestFocusEnabled(false);
+        m_jDelete3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                m_jDelete3ActionPerformed(evt);
+            }
+        });
+        jPanel3.add(m_jDelete3);
+        m_jDelete3.setBounds(430, 290, 54, 42);
+
+        m_jDelete1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png"))); // NOI18N
+        m_jDelete1.setFocusPainted(false);
+        m_jDelete1.setFocusable(false);
+        m_jDelete1.setMargin(new java.awt.Insets(8, 14, 8, 14));
+        m_jDelete1.setRequestFocusEnabled(false);
+        m_jDelete1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                m_jDelete1ActionPerformed(evt);
+            }
+        });
+        jPanel3.add(m_jDelete1);
+        m_jDelete1.setBounds(430, 340, 54, 42);
 
         add(jPanel3, java.awt.BorderLayout.CENTER);
 
@@ -679,38 +683,83 @@ private void m_jcodebarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:
     });
 }//GEN-LAST:event_m_jcodebarMouseClicked
 
-private void jEditAttributesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jEditAttributesActionPerformed
-
-    int i = m_invlines.getSelectedRow();
-    if (i < 0) {
-        Toolkit.getDefaultToolkit().beep(); // no line selected
-    } else {
-        try {
-            InventoryLine line = m_invlines.getLine(i);
-            JProductAttEdit attedit = JProductAttEdit.getAttributesEditor(this, m_App.getSession());
-            attedit.editAttributes(line.getProductAttSetId(), line.getProductAttSetInstId());
-            attedit.setVisible(true);
-            if (attedit.isOK()) {
-                // The user pressed OK
-                line.setProductAttSetInstId(attedit.getAttributeSetInst());
-                line.setProductAttSetInstDesc(attedit.getAttributeSetInstDescription());
-                m_invlines.setLine(i, line);
+    private void m_jDelete2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jDelete2ActionPerformed
+Buscar();
+    }//GEN-LAST:event_m_jDelete2ActionPerformed
+private void Buscar()
+{
+        ProductInfoExt prod = JProductFinder.showMessage(StockManagement.this, m_dlSales);
+        if (prod != null) {
+            String units = JOptionPane.showInputDialog(null,"Cantidad:", prod.getName(), JOptionPane.QUESTION_MESSAGE);
+            try {
+                double d = Double.parseDouble(units);
+                incProduct(prod, d);
+            } catch (Exception e) {
             }
-        } catch (BasicException ex) {
-            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotfindattributes"), ex);
-            msg.show(this);
         }
-    }
-}//GEN-LAST:event_jEditAttributesActionPerformed
+}
+    private void m_jDelete3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jDelete3ActionPerformed
+        // 1. Create the input components
+        JTextField price = new JTextField();
+        JTextField quantity = new JTextField();
+        InventoryLine line = m_invlines.getLine(m_invlines.getSelectedRow());
+        price.setText(String.valueOf(line.getPrice()));
+        quantity.setText(String.valueOf(line.getMultiply()));
+        // 2. Create a JPanel to hold the components
+        JPanel myPanel = new JPanel();
+        // You can use a layout manager for better arrangement (e.g., GridLayout, BoxLayout)
+        myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
+
+        myPanel.add(new JLabel("Cantidad:"));
+        myPanel.add(quantity);
+        myPanel.add(new JLabel("Precio compra:"));
+        myPanel.add(price);
+
+        // 3. Show the dialog
+        int result = JOptionPane.showConfirmDialog(
+            null,                       // Parent component (null for default frame)
+            myPanel,                    // The custom JPanel as the message
+            line.getProductName(),       // Dialog title
+            JOptionPane.OK_CANCEL_OPTION // Option type (OK and Cancel buttons)
+        );
+
+        // 4. Process the input after the dialog is closed
+        if (result == JOptionPane.OK_OPTION) {
+
+            try {
+                if(Double.parseDouble(price.getText())<0||Double.parseDouble(quantity.getText())<0)
+                {
+                    JOptionPane.showMessageDialog(null, "La cantidad o el precio de compra no son valores válidos.");
+                    return;
+                }
+                line.setPrice(Double.parseDouble(price.getText()));
+                line.setMultiply(Double.parseDouble(quantity.getText()));
+                m_invlines.setLine(m_invlines.getSelectedRow(), line);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "La cantidad o el precio de compra no son valores válidos.");
+            }
+        }
+    }//GEN-LAST:event_m_jDelete3ActionPerformed
+
+    private void m_jDelete1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jDelete1ActionPerformed
+        if (m_invlines.getCount() == 0) {
+            // No podemos grabar, no hay ningun registro.
+            Toolkit.getDefaultToolkit().beep();
+        } else {
+            int respuesta = JOptionPane.showConfirmDialog(null, "Esta seguro que desea realizar la captura de inventario?");
+            if(respuesta == JOptionPane.OK_OPTION)
+            {
+                saveData();
+            }
+        }
+    }//GEN-LAST:event_m_jDelete1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDownloadProducts;
     private javax.swing.JPanel catcontainer;
-    private javax.swing.JButton jEditAttributes;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel8;
     private com.openbravo.beans.JNumberKeys jNumberKeys;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -720,6 +769,9 @@ private void jEditAttributesActionPerformed(java.awt.event.ActionEvent evt) {//G
     private javax.swing.JPanel jPanel6;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JButton m_jDelete;
+    private javax.swing.JButton m_jDelete1;
+    private javax.swing.JButton m_jDelete2;
+    private javax.swing.JButton m_jDelete3;
     private javax.swing.JButton m_jDown;
     private javax.swing.JButton m_jEnter;
     private javax.swing.JComboBox m_jLocation;

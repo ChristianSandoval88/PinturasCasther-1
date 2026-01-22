@@ -1,21 +1,3 @@
-//    Openbravo POS is a point of sales application designed for touch screens.
-//    Copyright (C) 2007-2009 Openbravo, S.L.
-//    http://www.openbravo.com/product/pos
-//
-//    This file is part of Openbravo POS.
-//
-//    Openbravo POS is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    (at your option) any later version.
-//
-//    Openbravo POS is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
-//
-//    You should have received a copy of the GNU General Public License
-//    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.openbravo.pos.panels;
 
@@ -29,6 +11,7 @@ import com.openbravo.basic.BasicException;
 import com.openbravo.data.user.ListProvider;
 import com.openbravo.data.user.ListProviderCreator;
 import com.openbravo.pos.forms.DataLogicSales;
+import java.awt.event.KeyEvent;
 
 /**
  *
@@ -38,7 +21,7 @@ public class JProductFinder extends javax.swing.JDialog {
 
     private ProductInfoExt m_ReturnProduct;
     private ListProvider lpr;
-    
+    private DataLogicSales dlSales;
     public final static int PRODUCT_ALL = 0;
     public final static int PRODUCT_NORMAL = 1;
     public final static int PRODUCT_AUXILIAR = 2;
@@ -55,13 +38,16 @@ public class JProductFinder extends javax.swing.JDialog {
     private ProductInfoExt init(DataLogicSales dlSales, int productsType) {
         
         initComponents();
-        
+        this.dlSales=dlSales;
+        jTextField1.getText();
+        jTextField1.requestFocus();
         jScrollPane1.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
 
         //ProductFilter jproductfilter = new ProductFilter(app);
         ProductFilterSales jproductfilter = new ProductFilterSales(dlSales, m_jKeys);
         jproductfilter.activate();
-        m_jProductSelect.add(jproductfilter, BorderLayout.CENTER);
+        
+        //m_jProductSelect.add(jproductfilter, BorderLayout.CENTER);
         switch (productsType) {
             case PRODUCT_NORMAL:
                 lpr = new ListProviderCreator(dlSales.getProductListNormal(), jproductfilter);
@@ -139,30 +125,19 @@ public class JProductFinder extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel4 = new javax.swing.JPanel();
+        jButton3 = new javax.swing.JButton();
         m_jKeys = new com.openbravo.editor.JEditorKeys();
+        jPanel4 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         m_jProductSelect = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        jButton3 = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jListProducts = new javax.swing.JList();
         jPanel1 = new javax.swing.JPanel();
         jcmdOK = new javax.swing.JButton();
         jcmdCancel = new javax.swing.JButton();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle(AppLocal.getIntString("form.productslist")); // NOI18N
-
-        jPanel4.setLayout(new java.awt.BorderLayout());
-        jPanel4.add(m_jKeys, java.awt.BorderLayout.NORTH);
-
-        getContentPane().add(jPanel4, java.awt.BorderLayout.LINE_END);
-
-        jPanel2.setLayout(new java.awt.BorderLayout());
-
-        m_jProductSelect.setLayout(new java.awt.BorderLayout());
 
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/launch.png"))); // NOI18N
         jButton3.setText(AppLocal.getIntString("button.executefilter")); // NOI18N
@@ -171,7 +146,25 @@ public class JProductFinder extends javax.swing.JDialog {
                 jButton3ActionPerformed(evt);
             }
         });
-        jPanel3.add(jButton3);
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle(AppLocal.getIntString("form.productslist")); // NOI18N
+
+        jPanel4.setLayout(new java.awt.BorderLayout());
+        getContentPane().add(jPanel4, java.awt.BorderLayout.LINE_END);
+
+        jPanel2.setLayout(new java.awt.BorderLayout());
+
+        m_jProductSelect.setLayout(new java.awt.BorderLayout());
+
+        jTextField1.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jTextField1.setPreferredSize(new java.awt.Dimension(640, 32));
+        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField1KeyReleased(evt);
+            }
+        });
+        jPanel3.add(jTextField1);
 
         m_jProductSelect.add(jPanel3, java.awt.BorderLayout.SOUTH);
 
@@ -183,14 +176,19 @@ public class JProductFinder extends javax.swing.JDialog {
         jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
         jListProducts.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jListProducts.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                jListProductsValueChanged(evt);
-            }
-        });
         jListProducts.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jListProductsMouseClicked(evt);
+            }
+        });
+        jListProducts.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jListProductsKeyReleased(evt);
+            }
+        });
+        jListProducts.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                jListProductsValueChanged(evt);
             }
         });
         jScrollPane1.setViewportView(jListProducts);
@@ -226,8 +224,8 @@ public class JProductFinder extends javax.swing.JDialog {
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
-        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-665)/2, (screenSize.height-565)/2, 665, 565);
+        setSize(new java.awt.Dimension(665, 565));
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jListProductsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListProductsMouseClicked
@@ -270,6 +268,34 @@ public class JProductFinder extends javax.swing.JDialog {
         }
         
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
+        //40 abajo 38 arriba
+        
+        if (evt.getKeyCode()==40||evt.getKeyCode()==38&&jListProducts.getModel().getSize() > 0) {
+           jListProducts.requestFocus();
+        }
+        if (evt.getKeyCode()==KeyEvent.VK_ESCAPE)
+            this.dispose();
+        if(jTextField1.getText().length()>2)
+        {
+            try {
+                jListProducts.setModel(new MyListData(dlSales.getProductFilter(jTextField1.getText())));
+                /*if (jListProducts.getModel().getSize() > 0) {
+                    jListProducts.setSelectedIndex(0);
+                }*/
+            } catch (BasicException e) {
+                e.printStackTrace();
+            }
+        }        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1KeyReleased
+
+    private void jListProductsKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jListProductsKeyReleased
+        if (evt.getKeyCode()==KeyEvent.VK_BACK_SPACE)
+            jTextField1.requestFocus();
+        if (evt.getKeyCode()==KeyEvent.VK_ESCAPE)
+            this.dispose();
+    }//GEN-LAST:event_jListProductsKeyReleased
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -281,6 +307,7 @@ public class JProductFinder extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField jTextField1;
     private javax.swing.JButton jcmdCancel;
     private javax.swing.JButton jcmdOK;
     private com.openbravo.editor.JEditorKeys m_jKeys;
