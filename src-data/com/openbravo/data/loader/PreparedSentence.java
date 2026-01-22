@@ -129,7 +129,11 @@ public class PreparedSentence extends JDBCSentence {
         // false -> un updatecount (si -1 entonces se acabo)
         
         closeExec();
-
+        try {
+            Statement stmt = m_s.getConnection().createStatement();
+            stmt.executeQuery("SELECT 1");
+        } catch (SQLException eSQL) {
+        }
         try {
 
             logger.info("Executing prepared SQL: " + m_sentence);

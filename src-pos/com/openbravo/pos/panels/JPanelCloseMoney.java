@@ -565,6 +565,13 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
                         body += "<tr><td colspan=\"2\">" + productSalesR.get(i).printName() + "</td><td>" + productSalesR.get(i).printTipo() + "</td><td>" + productSalesR.get(i).printEnvase() + "</td><td align=\"center\">" + productSalesR.get(i).printCant() + "</td><td colspan=\"2\">" + productSalesR.get(i).printPersona()+ "</td><td align=\"center\">" + productSalesR.get(i).printTicketId() + "</td></tr>";
                     }
                     
+                    body = body + "<tr><td colspan=\"4\"><hr/></td></tr><tr></tr><tr><td colspan=\"4\">REPORTE DE ENTRADAS/SALIDAS.</td></tr><tr><td colspan=\"4\"><hr/></td></tr>";
+                        
+                        java.util.List<PaymentsModel.PaymentMovements> pm = this.m_PaymentsToClose.getPaymentMovements();
+                        for (int i = 0; i < pm.size(); i++) {
+                            body = body + "<tr><td colspan=\"1\">" + ((PaymentsModel.PaymentMovements) pm.get(i)).printType()+ "</td><td colspan=\"1\">" + ((PaymentsModel.PaymentMovements) pm.get(i)).printValue() + "</td><td colspan=\"2\">" + ((PaymentsModel.PaymentMovements) pm.get(i)).printType2() + "</td></tr>";
+                        }
+                    
                     body += "<tr><td colspan=\"8\">&nbsp;</td></tr>"
                          + "<tr><td colspan=\"8\"><hr/></td></tr><tr></tr>"
                             + "<tr><td colspan=\"8\">*INVENTARIO ACTUAL.</td></tr>"

@@ -68,7 +68,7 @@ public class StartPOS {
                 
                 AppConfig config = new AppConfig(args);
                 config.load();
-                /*
+                
                 int seleccion = JOptionPane.showOptionDialog( null,"Seleccione una opcion",
                          "Selector de opciones",JOptionPane.YES_NO_CANCEL_OPTION,
                          JOptionPane.QUESTION_MESSAGE,null,
@@ -82,7 +82,7 @@ public class StartPOS {
                     //mesa - 25.3.80.139
                     //batan 1 - 25.73.155.214
                     //Rancho Nuevo - 25.93.231.212
-                    //Ult suc - 25.145.131.242
+                    //Experiencia - 25.81.228.243
                     //san eugenio -- 25.94.170.70
                     //batan2 -- 25.71.211.108
                     if(seleccion==0)
@@ -111,7 +111,7 @@ public class StartPOS {
                     }
                     else if(seleccion==6)
                     {
-                        config.setProperty("db.URL", "jdbc:mysql://25.145.131.242/pv");
+                        config.setProperty("db.URL", "jdbc:mysql://25.81.228.243/pv");
                     }
                     else if(seleccion==7)
                     {
@@ -121,7 +121,7 @@ public class StartPOS {
                     {
                         config.setProperty("db.URL", "jdbc:mysql://25.43.6.50/pv");
                     }
-                }*/
+                }
 
                 //System.out.println(config.getProperty("db.URL"));
                 // set Locale.

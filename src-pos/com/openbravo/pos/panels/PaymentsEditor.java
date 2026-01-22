@@ -60,8 +60,7 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
 
         m_jreason.addActionListener(dirty);
         jTotal.addPropertyChangeListener("Text", dirty);
-        
-
+        jTextField1.addPropertyChangeListener("Text", dirty);
         writeValueEOF();
     }
     
@@ -72,6 +71,8 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         setReasonTotal(null, null);
         m_jreason.setEnabled(false);
         jTotal.setEnabled(false);
+        jTextField1.setEnabled(false);
+        jTextField1.setText(null);
     }  
     
     public void writeValueInsert() {
@@ -80,7 +81,9 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         datenew = null;
         setReasonTotal("cashin", null);
         m_jreason.setEnabled(true);
-        jTotal.setEnabled(true);   
+        jTotal.setEnabled(true);  
+        jTextField1.setText(null);
+        jTextField1.setEnabled(true);
         jTotal.activate();
     }
     
@@ -92,6 +95,7 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         setReasonTotal(payment[4], payment[5]);
         m_jreason.setEnabled(false);
         jTotal.setEnabled(false);
+        jTextField1.setEnabled(false);
     }
     
     public void writeValueEdit(Object value) {
@@ -100,13 +104,15 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         datenew = (Date) payment[2];
         m_sPaymentId = (String) payment[3];
         setReasonTotal(payment[4], payment[5]);
+        jTextField1.setText((String) payment[6]);
         m_jreason.setEnabled(false);
         jTotal.setEnabled(false);
+        jTextField1.setEnabled(false);
         jTotal.activate();
     }
     
     public Object createValue() throws BasicException {
-        Object[] payment = new Object[6];
+        Object[] payment = new Object[7];
         payment[0] = m_sId == null ? UUID.randomUUID().toString() : m_sId;
         payment[1] = m_App.getActiveCashIndex();
         payment[2] = datenew == null ? new Date() : datenew;
@@ -115,6 +121,7 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         PaymentReason reason = (PaymentReason) m_ReasonModel.getSelectedItem();
         Double dtotal = jTotal.getDoubleValue();
         payment[5] = reason == null ? dtotal : reason.addSignum(dtotal);
+        payment[6] = jTextField1.getText();
         return payment;
     }
     
@@ -205,6 +212,8 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         m_jreason = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
         jTotal = new com.openbravo.editor.JEditorCurrency();
+        jTextField1 = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         m_jKeys = new com.openbravo.editor.JEditorKeys();
 
@@ -216,6 +225,8 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
 
         jLabel3.setText(AppLocal.getIntString("label.paymenttotal")); // NOI18N
 
+        jLabel1.setText("Nota");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -224,12 +235,14 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(m_jreason, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(63, Short.MAX_VALUE))
+                    .addComponent(jTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(79, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -242,7 +255,11 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
-                .addContainerGap(320, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addContainerGap(294, Short.MAX_VALUE))
         );
 
         add(jPanel3, java.awt.BorderLayout.CENTER);
@@ -255,10 +272,12 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JTextField jTextField1;
     private com.openbravo.editor.JEditorCurrency jTotal;
     private com.openbravo.editor.JEditorKeys m_jKeys;
     private javax.swing.JComboBox m_jreason;

@@ -43,7 +43,8 @@ public abstract class Transaction<T> {
             return transact();
         } else {
             try {
-                try {    
+                try {  
+                    s.connect();
                     s.begin();
                     T result = transact();
                     s.commit();

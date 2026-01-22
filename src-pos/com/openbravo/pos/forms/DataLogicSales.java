@@ -49,7 +49,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     /** Creates a new instance of SentenceContainerGeneric */
     public DataLogicSales() {
         stockdiaryDatas = new Datas[] {Datas.STRING, Datas.TIMESTAMP, Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.DOUBLE};
-        paymenttabledatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.STRING, Datas.STRING, Datas.DOUBLE};
+        paymenttabledatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.STRING};
         stockdatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.DOUBLE, Datas.DOUBLE};
         auxiliarDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING};
 
@@ -616,7 +616,7 @@ new Field(AppLocal.getIntString("label.prodpricesell"), Datas.DOUBLE, Formats.CU
                                 new Double(l.getPrice())
                             });
                         }
-                        
+                        /*
                         if(l.getEnvase().equals("CON ENVASE")&&(l.getTipo().trim().equals("0.250")
                                 ||l.getTipo().trim().equals("0.500")
                                 ||l.getTipo().trim().equals("1")
@@ -840,7 +840,7 @@ new Field(AppLocal.getIntString("label.prodpricesell"), Datas.DOUBLE, Formats.CU
                             new Double(-l.getMultiply()),
                             new Double("0.00")
                             });
-                        }
+                        }*/
                     }
                 }
 
@@ -1161,8 +1161,8 @@ new Field(AppLocal.getIntString("label.prodpricesell"), Datas.DOUBLE, Formats.CU
                     , "INSERT INTO RECEIPTS (ID, MONEY, DATENEW) VALUES (?, ?, ?)"
                     , new SerializerWriteBasicExt(paymenttabledatas, new int[] {0, 1, 2})).exec(params);
                 return new PreparedSentence(s
-                    , "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL) VALUES (?, ?, ?, ?)"
-                    , new SerializerWriteBasicExt(paymenttabledatas, new int[] {3, 0, 4, 5})).exec(params);
+                    , "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, NOTES) VALUES (?, ?, ?, ?, ?)"
+                    , new SerializerWriteBasicExt(paymenttabledatas, new int[] {3, 0, 4, 5,6})).exec(params);
             }
         };
     }

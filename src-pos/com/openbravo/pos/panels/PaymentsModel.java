@@ -22,7 +22,7 @@ public class PaymentsModel {
     private java.util.List<ProductSalesLine> m_lproductsales;
     private java.util.List<ProductSalesLineR> m_lproductsalesR;
     private final static String[] PAYMENTHEADERS = {"Label.Payment", "label.totalcash"};
-    
+        private java.util.List<PaymentMovements> m_lpaymentsMov;
     private Integer m_iSales;
     private Double m_dSalesBase;
     private Double m_dSalesTaxes;
@@ -170,8 +170,28 @@ public class PaymentsModel {
         } else {
           p.m_lStock = stock;
         }
+        
+        List lMov = new StaticSentence(app.getSession()            
+            , "SELECT PAYMENTS.PAYMENT,PAYMENTS.TOTAL, PAYMENTS.NOTES " +
+              "FROM PAYMENTS, RECEIPTS " +
+              "WHERE (PAYMENTS.PAYMENT='cashin' OR PAYMENTS.PAYMENT='cashout') AND PAYMENTS.RECEIPT = RECEIPTS.ID AND RECEIPTS.MONEY = ? " 
+              //"GROUP BY PAYMENTS.PAYMENT"
+            , SerializerWriteString.INSTANCE
+            , new SerializerReadClass(PaymentsModel.PaymentMovements.class)) //new SerializerReadBasic(new Datas[] {Datas.STRING, Datas.DOUBLE}))
+            .list(app.getActiveCashIndex()); 
+        
+        if (lMov == null) {
+            p.m_lpaymentsMov = new ArrayList();
+        } else {
+            p.m_lpaymentsMov = lMov;
+        }
         return p;
     }
+    
+    public List<PaymentMovements> getPaymentMovements()
+  {
+    return this.m_lpaymentsMov;
+  }
     public List<Stock> getStockLines()
   {
     return this.m_lStock;
@@ -457,6 +477,34 @@ public class PaymentsModel {
         
         public String printType() {
             return AppLocal.getIntString("transpayment." + m_PaymentType);
+        }
+        public String getType() {
+            return m_PaymentType;
+        }
+        public String printValue() {
+            return Formats.CURRENCY.formatValue(m_PaymentValue);
+        }
+        public Double getValue() {
+            return m_PaymentValue;
+        }        
+    }
+    
+    public static class PaymentMovements implements SerializableRead {
+        
+        private String m_PaymentType;
+        private Double m_PaymentValue;
+        private String m_PaymentType2;
+        public void readValues(DataRead dr) throws BasicException {
+            m_PaymentType = dr.getString(1);
+            m_PaymentValue = dr.getDouble(2);
+            m_PaymentType2 = dr.getString(3);
+        }
+        
+        public String printType() {
+            return AppLocal.getIntString("transpayment." + m_PaymentType);
+        }
+        public String printType2() {
+            return m_PaymentType2;
         }
         public String getType() {
             return m_PaymentType;
