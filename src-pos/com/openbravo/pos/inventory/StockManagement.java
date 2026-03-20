@@ -479,9 +479,9 @@ public class StockManagement extends JPanel implements JPanelView {
 
         jLabel1.setText(AppLocal.getIntString("label.stockdate")); // NOI18N
         jPanel3.add(jLabel1);
-        jLabel1.setBounds(10, 30, 150, 16);
+        jLabel1.setBounds(10, 10, 150, 14);
         jPanel3.add(m_jdate);
-        m_jdate.setBounds(160, 30, 200, 22);
+        m_jdate.setBounds(160, 10, 200, 20);
 
         m_jbtndate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/date.png"))); // NOI18N
         m_jbtndate.addActionListener(new java.awt.event.ActionListener() {
@@ -490,11 +490,11 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(m_jbtndate);
-        m_jbtndate.setBounds(370, 30, 40, 25);
+        m_jbtndate.setBounds(370, 10, 40, 25);
 
         jLabel2.setText("Razón/Sucursal");
         jPanel3.add(jLabel2);
-        jLabel2.setBounds(10, 60, 150, 16);
+        jLabel2.setBounds(10, 40, 150, 14);
 
         m_jreason.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -502,9 +502,9 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(m_jreason);
-        m_jreason.setBounds(160, 60, 200, 20);
+        m_jreason.setBounds(160, 40, 200, 20);
         jPanel3.add(m_jLocation);
-        m_jLocation.setBounds(380, 60, 200, 20);
+        m_jLocation.setBounds(380, 40, 200, 20);
 
         m_jDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/locationbar_erase.png"))); // NOI18N
         m_jDelete.setFocusPainted(false);
@@ -517,7 +517,7 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(m_jDelete);
-        m_jDelete.setBounds(430, 190, 54, 42);
+        m_jDelete.setBounds(430, 170, 54, 42);
 
         m_jUp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow22.png"))); // NOI18N
         m_jUp.setFocusPainted(false);
@@ -530,7 +530,7 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(m_jUp);
-        m_jUp.setBounds(430, 90, 54, 42);
+        m_jUp.setBounds(430, 70, 54, 42);
 
         m_jDown.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow22.png"))); // NOI18N
         m_jDown.setFocusPainted(false);
@@ -543,11 +543,11 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(m_jDown);
-        m_jDown.setBounds(430, 140, 54, 42);
+        m_jDown.setBounds(430, 120, 54, 42);
 
         jPanel5.setLayout(new java.awt.BorderLayout());
         jPanel3.add(jPanel5);
-        jPanel5.setBounds(10, 90, 410, 340);
+        jPanel5.setBounds(10, 70, 410, 340);
 
         m_jDelete2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/search22.png"))); // NOI18N
         m_jDelete2.setFocusPainted(false);
@@ -560,7 +560,7 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(m_jDelete2);
-        m_jDelete2.setBounds(430, 240, 54, 42);
+        m_jDelete2.setBounds(430, 220, 54, 42);
 
         m_jDelete3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/color_line.png"))); // NOI18N
         m_jDelete3.setFocusPainted(false);
@@ -573,7 +573,7 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(m_jDelete3);
-        m_jDelete3.setBounds(430, 290, 54, 42);
+        m_jDelete3.setBounds(430, 270, 54, 42);
 
         m_jDelete1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png"))); // NOI18N
         m_jDelete1.setFocusPainted(false);
@@ -586,7 +586,7 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(m_jDelete1);
-        m_jDelete1.setBounds(430, 340, 54, 42);
+        m_jDelete1.setBounds(430, 320, 54, 42);
 
         add(jPanel3, java.awt.BorderLayout.CENTER);
 
