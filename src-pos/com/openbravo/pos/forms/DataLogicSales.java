@@ -624,7 +624,7 @@ new Field(AppLocal.getIntString("label.prodpricesell"), Datas.DOUBLE, Formats.CU
                                 new Double(l.getPrice())
                             });
                         }
-                        /*
+                        
                         if(l.getEnvase().equals("CON ENVASE")&&(l.getTipo().trim().equals("0.250")
                                 ||l.getTipo().trim().equals("0.500")
                                 ||l.getTipo().trim().equals("1")
@@ -848,7 +848,7 @@ new Field(AppLocal.getIntString("label.prodpricesell"), Datas.DOUBLE, Formats.CU
                             new Double(-l.getMultiply()),
                             new Double("0.00")
                             });
-                        }*/
+                        }
                     }
                 }
 
@@ -1119,7 +1119,7 @@ new Field(AppLocal.getIntString("label.prodpricesell"), Datas.DOUBLE, Formats.CU
     public final SentenceExec getStockDiaryInsert() {
         return new SentenceExecTransaction(s) {
             public int execInTransaction(Object params) throws BasicException {
-                /*int updateresult = ((Object[]) params)[5] == null // si ATTRIBUTESETINSTANCE_ID is null
+                int updateresult = ((Object[]) params)[5] == null // si ATTRIBUTESETINSTANCE_ID is null
                     ? new PreparedSentence(s
                         , "UPDATE STOCKCURRENT SET UNITS = (UNITS + ?) WHERE LOCATION = ? AND PRODUCT = ? AND ATTRIBUTESETINSTANCE_ID IS NULL"
                         , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {6,3, 4})).exec(params)
@@ -1132,7 +1132,7 @@ new Field(AppLocal.getIntString("label.prodpricesell"), Datas.DOUBLE, Formats.CU
                     new PreparedSentence(s
                         , "INSERT INTO STOCKCURRENT (LOCATION, PRODUCT, ATTRIBUTESETINSTANCE_ID, UNITS) VALUES (?, ?, ?, ?)"
                         , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {3, 4, 5, 6})).exec(params);
-                }*/
+                }
                 new PreparedSentence(s
                     , "INSERT INTO STOCKDIARYTEMP (ID, DATENEW, REASON, LOCATION, PRODUCT, ATTRIBUTESETINSTANCE_ID, UNITS, PRICE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
                     , new SerializerWriteBasicExt(stockdiaryDatas, new int[] {0, 1, 2, 3, 4, 5, 6, 7})).exec(params);
